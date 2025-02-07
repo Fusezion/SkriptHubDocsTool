@@ -1,0 +1,17 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = crlf
+indent_size = 4
+indent_style = tab
+insert_final_newline = true
+max_line_length = 120
+tab_width = 4
+trim_trailing_whitespace = true
+ij_any_keep_indents_on_empty_lines = false
+
+[*.json]
+indent_style = space
+indent_size = 2
+ij_json_indent_size = 2
