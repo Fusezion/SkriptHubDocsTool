@@ -1,18 +1,33 @@
 package net.skripthub.docstool.modals
 
-data class SyntaxData(var id: String? = null,
-                      var name: String? = null,
-                      var since: Array<String>? = null,
-                      var returnType: String? = null,
-                      var requiredPlugins: Array<String>? = null,
-                      var description: Array<String>? = null,
-                      var examples: Array<String>? = null,
-                      var patterns: Array<String>? = null,
-                      var usage: Array<String>? = null,
-                      var changers: Array<String>? = null,
-                      var eventValues: Array<String>? = null,
-                      var cancellable: Boolean? = null,
-                      var entries: Array<DocumentationEntryNode>? = null,
+import com.google.gson.JsonObject
+
+abstract class SyntaxData() {
+
+	lateinit var id: String
+	lateinit var name: String
+	var examples: String? = null
+	var description: String? = null
+	var since: String? = null
+	var documentationId: String? = null
+
+	abstract fun buildJson() : JsonObject
+
+}
+
+data class SyntaxDataOld(var id: String? = null,
+						 var name: String? = null,
+						 var since: Array<String>? = null,
+						 var returnType: String? = null,
+						 var requiredPlugins: Array<String>? = null,
+						 var description: Array<String>? = null,
+						 var examples: Array<String>? = null,
+						 var patterns: Array<String>? = null,
+						 var usage: Array<String>? = null,
+						 var changers: Array<String>? = null,
+						 var eventValues: Array<String>? = null,
+						 var cancellable: Boolean? = null,
+						 var entries: Array<DocumentationEntryNode>? = null,
                       ) {
     fun toMap(): Map<String, Any> {
         val map = LinkedHashMap<String, Any>()

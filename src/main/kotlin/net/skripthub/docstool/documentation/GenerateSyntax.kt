@@ -8,9 +8,8 @@ import ch.njol.skript.lang.SkriptEventInfo
 import ch.njol.skript.lang.SyntaxElementInfo
 import ch.njol.skript.lang.function.JavaFunction
 import ch.njol.skript.registrations.Classes
-import ch.njol.skript.util.Utils
 import net.skripthub.docstool.modals.DocumentationEntryNode
-import net.skripthub.docstool.modals.SyntaxData
+import net.skripthub.docstool.modals.SyntaxDataOld
 import net.skripthub.docstool.utils.EventValuesGetter
 import net.skripthub.docstool.utils.ReflectionUtils
 import org.bukkit.ChatColor
@@ -24,29 +23,22 @@ import java.lang.reflect.Field
 import java.util.function.Function
 
 class GenerateSyntax {
-	companion object {
+	companion object Steve {
 
-		data class CodeNameData(val isArray: Boolean, val codeName: String) {
-			override fun toString(): String {
-				return Utils.toEnglishPlural(codeName, isArray)
-			}
-		}
-
-		private fun grabCodeName(classObj: Class<*>): CodeNameData? {
+		private fun grabCodeName(classObj: Class<*>) : String? {
 			val expectedClass: Class<*> = if (classObj.isArray) classObj.componentType else classObj
-			val classInfo = Classes.getExactClassInfo(expectedClass)
-							?: Classes.getSuperClassInfo(expectedClass)
-
+			val classInfo = Classes.getExactClassInfo(expectedClass) ?: Classes.getSuperClassInfo(expectedClass)
 			if (classInfo == null)
 				return null
-			return CodeNameData(classObj.isArray, classInfo.codeName)
+			val noun = classInfo.name
+			return if (classObj.isArray) noun.plural else noun.singular
 		}
 
-		fun generateSyntaxFromEvent(info: SkriptEventInfo<*>, getter: EventValuesGetter?): SyntaxData? {
-			if (info.description != null && info.description!!.contentEquals(SkriptEventInfo.NO_DOC)) {
+		fun generateSyntaxFromEvent(info: SkriptEventInfo<*>, getter: EventValuesGetter?): SyntaxDataOld? {
+			if (info.description != null && info.description.contentEquals(SkriptEventInfo.NO_DOC)) {
 				return null
 			}
-			val data = SyntaxData()
+			val data = SyntaxDataOld()
 			data.name = info.getName()
 			data.id = info.id
 			if (info.documentationID != null) {
@@ -95,12 +87,12 @@ class GenerateSyntax {
 			return data
 		}
 
-		fun generateSyntaxFromSyntaxElementInfo(info: SyntaxElementInfo<*>, sender: CommandSender? = null): SyntaxData? {
+		fun generateSyntaxFromSyntaxElementInfo(info: SyntaxElementInfo<*>, sender: CommandSender? = null): SyntaxDataOld? {
 			val syntaxInfoClass = info.getElementClass()
 			if (syntaxInfoClass.isAnnotationPresent(NoDoc::class.java))
 				return null
 
-			val data = SyntaxData()
+			val data = SyntaxDataOld()
 			data.name = grabAnnotation(syntaxInfoClass, Name::class.java, {it.value}, syntaxInfoClass.simpleName)
 			if (data.name.isNullOrBlank())
 				data.name = syntaxInfoClass.simpleName
@@ -117,7 +109,7 @@ class GenerateSyntax {
 			return data
 		}
 
-		fun generateSyntaxFromExpression(info: ExpressionInfo<*, *>, classes: Array<Class<*>?>, sender: CommandSender?): SyntaxData? {
+		fun generateSyntaxFromExpression(info: ExpressionInfo<*, *>, classes: Array<Class<*>?>, sender: CommandSender?): SyntaxDataOld? {
 			val data = generateSyntaxFromSyntaxElementInfo(info, sender) ?: return null
 			data.returnType = Classes.toString(info.returnType)
 			val array = ArrayList<String>()
@@ -131,7 +123,7 @@ class GenerateSyntax {
 			return data
 		}
 
-		fun generateSyntaxFromStructureInfo(info: StructureInfo<*>): SyntaxData? {
+		fun generateSyntaxFromStructureInfo(info: StructureInfo<*>): SyntaxDataOld? {
 			val data = generateSyntaxFromSyntaxElementInfo(info) ?: return null
 			val syntaxInfoClass = info.getElementClass()
 			data.patterns = cleanupSyntaxPattern(info.patterns)
@@ -144,10 +136,10 @@ class GenerateSyntax {
 			return data
 		}
 
-		fun generateSyntaxFromClassInfo(info: ClassInfo<*>): SyntaxData? {
+		fun generateSyntaxFromClassInfo(info: ClassInfo<*>): SyntaxDataOld? {
 			if (info.docName != null && info.docName.equals(ClassInfo.NO_DOC))
 				return null
-			val data = SyntaxData()
+			val data = SyntaxDataOld()
 			if (info.docName != null) {
 				data.name = info.docName
 			} else {
@@ -181,8 +173,8 @@ class GenerateSyntax {
 			return data
 		}
 
-		fun generateSyntaxFromFunctionInfo(info: JavaFunction<*>): SyntaxData? {
-			val data = SyntaxData()
+		fun generateSyntaxFromFunctionInfo(info: JavaFunction<*>): SyntaxDataOld? {
+			val data = SyntaxDataOld()
 			data.name = info.name
 			data.id = "function_" + info.name
 			data.description = cleanupSyntaxInputs(info.description as? Array<String>)
@@ -364,17 +356,6 @@ class GenerateSyntax {
 		}
 
 		/**
-		 * Removes html tags from the provided string array
-		 * @return null when it's null, an empty array or a blank string, otherwise a new string with no html tags
-		 */
-		private fun removeHTML(strings: Array<String>?): Array<String>? {
-			if (strings.isNullOrEmpty()) {
-				return null
-			}
-			return strings.mapNotNull { removeHTML(it) }.toTypedArray()
-		}
-
-		/**
 		 * Removes html tags from the provided string
 		 * @return null when it's null or a blank string, otherwise a new string with no html tags
 		 */
@@ -383,6 +364,17 @@ class GenerateSyntax {
 				return null
 			}
 			return string.replace("""<.+?>(.+?)</.+?>""".toRegex(), "$1")
+		}
+
+		/**
+		 * Removes html tags from the provided string array
+		 * @return null when it's null, an empty array or a blank string, otherwise a new string with no html tags
+		 */
+		private fun removeHTML(strings: Array<String>?): Array<String>? {
+			if (strings.isNullOrEmpty()) {
+				return null
+			}
+			return strings.mapNotNull { removeHTML(it) }.toTypedArray()
 		}
 
 	}

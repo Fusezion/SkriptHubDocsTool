@@ -2,14 +2,14 @@ package net.skripthub.docstool.modals
 
 data class AddonData(var name: String,
                      var metadata: AddonMetadata,
-                     var events: MutableList<SyntaxData> = mutableListOf(),
-                     var conditions: MutableList<SyntaxData> = mutableListOf(),
-                     var effects: MutableList<SyntaxData> = mutableListOf(),
-                     var expressions: MutableList<SyntaxData> = mutableListOf(),
-                     var types: MutableList<SyntaxData> = mutableListOf(),
-                     var functions: MutableList<SyntaxData> = mutableListOf(),
-                     var sections: MutableList<SyntaxData> = mutableListOf(),
-                     var structures: MutableList<SyntaxData> = mutableListOf()) {
+                     var events: MutableList<SyntaxDataOld> = mutableListOf(),
+                     var conditions: MutableList<SyntaxDataOld> = mutableListOf(),
+                     var effects: MutableList<SyntaxDataOld> = mutableListOf(),
+                     var expressions: MutableList<SyntaxDataOld> = mutableListOf(),
+                     var types: MutableList<SyntaxDataOld> = mutableListOf(),
+                     var functions: MutableList<SyntaxDataOld> = mutableListOf(),
+                     var sections: MutableList<SyntaxDataOld> = mutableListOf(),
+                     var structures: MutableList<SyntaxDataOld> = mutableListOf()) {
     fun sortLists() {
         events.sortBy { info -> info.name }
         conditions.sortBy { info -> info.name }

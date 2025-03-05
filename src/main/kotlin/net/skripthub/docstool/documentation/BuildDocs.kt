@@ -6,7 +6,7 @@ import ch.njol.skript.lang.SkriptEventInfo
 import ch.njol.skript.lang.SyntaxElementInfo
 import ch.njol.skript.lang.function.Functions
 import net.skripthub.docstool.modals.AddonData
-import net.skripthub.docstool.modals.SyntaxData
+import net.skripthub.docstool.modals.SyntaxDataOld
 import net.skripthub.docstool.utils.EventValuesGetter
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
@@ -195,7 +195,7 @@ class BuildDocs(private val instance: JavaPlugin, private val sender: CommandSen
 
     }
 
-    private fun idCollisionTest(idSet: MutableSet<String>, listOfSyntaxData: MutableList<SyntaxData>, addon: String): MutableList<String>{
+    private fun idCollisionTest(idSet: MutableSet<String>, listOfSyntaxData: MutableList<SyntaxDataOld>, addon: String): MutableList<String>{
         val idCollisions = mutableListOf<String>()
         for (syntax in listOfSyntaxData){
             val id = syntax.id ?: continue
@@ -209,18 +209,18 @@ class BuildDocs(private val instance: JavaPlugin, private val sender: CommandSen
         return idCollisions
     }
 
-    private fun attemptIDMerge(listOfSyntaxData: MutableList<SyntaxData>, ids: MutableList<String>){
+    private fun attemptIDMerge(listOfSyntaxData: MutableList<SyntaxDataOld>, ids: MutableList<String>){
         // Only merge from like Syntax Types
         for(id in ids){
             attemptTypeMerge(id, listOfSyntaxData)
         }
     }
 
-    private fun attemptTypeMerge(id: String, listOfSyntaxData: MutableList<SyntaxData>){
+    private fun attemptTypeMerge(id: String, listOfSyntaxData: MutableList<SyntaxDataOld>){
         // Message attempting merge
         sender?.sendMessage("[" + ChatColor.DARK_AQUA + "Skript Hub Docs Tool"
                 + ChatColor.RESET + "] " + ChatColor.GREEN + "Attempting merge of $id")
-        val idCollisionList: ArrayList<SyntaxData> = ArrayList()
+        val idCollisionList: ArrayList<SyntaxDataOld> = ArrayList()
         val iterator = listOfSyntaxData.listIterator()
         while (iterator.hasNext()) {
             val syntax = iterator.next()
@@ -276,7 +276,7 @@ class BuildDocs(private val instance: JavaPlugin, private val sender: CommandSen
                 "Plugin: $addon\nMultiple syntax elements with the same id: $id")
     }
 
-    private fun addSyntax(list: MutableList<SyntaxData>, syntax: SyntaxData?) {
+    private fun addSyntax(list: MutableList<SyntaxDataOld>, syntax: SyntaxDataOld?) {
         if(syntax == null){
             return
         }

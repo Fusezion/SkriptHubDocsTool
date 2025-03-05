@@ -4,7 +4,7 @@ import com.google.gson.*
 import net.skripthub.docstool.modals.AddonData
 import net.skripthub.docstool.modals.AddonMetadata
 import net.skripthub.docstool.modals.DocumentationEntryNode
-import net.skripthub.docstool.modals.SyntaxData
+import net.skripthub.docstool.modals.SyntaxDataOld
 import java.io.BufferedWriter
 import java.io.IOException
 import java.util.*
@@ -39,7 +39,7 @@ class JsonFile(raw: Boolean) : FileType("json") {
         gson.toJson(json, writer)
     }
 
-    private fun addSection(json: JsonObject, property: String, list: MutableList<SyntaxData>) {
+    private fun addSection(json: JsonObject, property: String, list: MutableList<SyntaxDataOld>) {
         val array = JsonArray()
         for (syntax in list) {
             val jsonSyntax = getJsonSyntax(syntax)
@@ -50,7 +50,7 @@ class JsonFile(raw: Boolean) : FileType("json") {
             json.add(property, array)
     }
 
-    private fun getJsonSyntax(info: SyntaxData): JsonObject {
+    private fun getJsonSyntax(info: SyntaxDataOld): JsonObject {
         val syntax = JsonObject()
         for (entry in info.toMap().entries) {
             val property = entry.key.lowercase(Locale.getDefault()).replace('_', ' ')
